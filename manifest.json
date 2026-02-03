@@ -1,0 +1,24 @@
+
+{
+  "name": "Pickleball Referee Pro - Coco Pick",
+  "short_name": "Coco Pick",
+  "description": "Trọng tài Pickleball chuyên nghiệp",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#05070a",
+  "theme_color": "#2563eb",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/5258/5258286.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/5258/5258286.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

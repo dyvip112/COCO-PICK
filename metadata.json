@@ -1,0 +1,5 @@
+{
+  "name": "Pickleball Referee Pro",
+  "description": "A professional-grade Pickleball scoring application for referees featuring automated logic for server rotation, scoring rules, and side changes.",
+  "requestFramePermissions": []
+}
