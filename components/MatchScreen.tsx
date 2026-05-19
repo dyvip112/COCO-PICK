@@ -14,6 +14,7 @@ interface Props {
 
 const MatchScreen: React.FC<Props> = ({ settings, state, setState, onExit, onFinish }) => {
   const [isSetupComplete, setIsSetupComplete] = useState(false);
+  const [pendingGameOverState, setPendingGameOverState] = useState<MatchState | null>(null);
   const { scores, servingTeam, serverNumber, serverPlayerIdx, receiverPlayerIdx, teamPositions, isGameOver, visualSideSwapped } = state;
 
   const [firstServerInfo, setFirstServerInfo] = useState<{team: 0|1, playerIdx: number} | null>(null);
@@ -21,7 +22,22 @@ const MatchScreen: React.FC<Props> = ({ settings, state, setState, onExit, onFin
 
   const onPoint = (teamIdx: 0 | 1) => {
     if (isGameOver || servingTeam !== teamIdx) return;
-    setState(prev => handlePoint(prev, teamIdx, settings));
+    const nextState = handlePoint(state, teamIdx, settings);
+    if (nextState.isGameOver) {
+      setPendingGameOverState(nextState);
+      return;
+    }
+    setState(nextState);
+  };
+
+  const handleConfirmGameOverPoint = () => {
+    if (!pendingGameOverState) return;
+    setState(pendingGameOverState);
+    setPendingGameOverState(null);
+  };
+
+  const handleCancelGameOverPoint = () => {
+    setPendingGameOverState(null);
   };
 
   const onSideOut = () => {
@@ -387,6 +403,37 @@ const MatchScreen: React.FC<Props> = ({ settings, state, setState, onExit, onFin
           </button>
         </div>
       </div>
+
+      {pendingGameOverState && (
+        <div className="fixed inset-0 bg-slate-950/95 backdrop-blur-2xl z-[100] flex items-center justify-center p-8 text-center animate-in zoom-in duration-300">
+          <div className="w-full max-w-md bg-white/5 border border-white/10 rounded-[2rem] p-6 shadow-[0_30px_100px_rgba(0,0,0,0.75)]">
+            <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_70px_rgba(250,204,21,0.45)]">
+              <AlertTriangle size={38} className="text-black" strokeWidth={3} />
+            </div>
+            <h2 className="text-3xl font-black text-white mb-3 uppercase italic leading-tight">
+              <span className="block">XÁC NHẬN</span>
+              <span className="block">KẾT THÚC</span>
+            </h2>
+            <p className="text-sm text-slate-300 font-bold mb-8 uppercase leading-relaxed tracking-wider">
+              Điểm này sẽ kết thúc trận đấu.<br />
+              Bạn có chắc chắn?
+            </p>
+            <div className="text-5xl font-black text-white mb-8 flex items-center justify-center gap-5 bg-black/20 px-8 py-5 rounded-[2rem] border border-white/10">
+              <span>{pendingGameOverState.scores[0]}</span>
+              <span className="text-slate-700">-</span>
+              <span>{pendingGameOverState.scores[1]}</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <button onClick={handleCancelGameOverPoint} className="bg-white/10 text-white font-black py-4 rounded-2xl active:scale-95 uppercase tracking-[0.2em] text-sm border border-white/10">
+                HỦY
+              </button>
+              <button onClick={handleConfirmGameOverPoint} className="bg-green-500 text-white font-black py-4 rounded-2xl active:scale-95 uppercase tracking-[0.2em] text-sm shadow-[0_0_40px_rgba(34,197,94,0.35)]">
+                XÁC NHẬN
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isGameOver && (
         <div className="fixed inset-0 bg-slate-950/99 backdrop-blur-3xl z-[100] flex flex-col items-center justify-center p-8 text-center animate-in zoom-in duration-500">
